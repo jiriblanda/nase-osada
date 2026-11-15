@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import {
-  collection,
   doc,
   onSnapshot,
   runTransaction,
   serverTimestamp,
   setDoc
 } from "firebase/firestore";
-import { auth, db, ensureSignedIn } from "./firebase.js";
+import { db, ensureSignedIn } from "./firebase.js";
+
+const MAX_PLAYERS = 6;
 
 function makeRoomCode() {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -78,7 +79,6 @@ export default function App() {
           await setDoc(roomRef, {
             code,
             hostUid: user.uid,
-            guestUid: null,
             players: [{ uid: user.uid, name: nickname.trim() || "Hráč 1" }],
             status: "waiting",
             round: 1,
@@ -94,7 +94,7 @@ export default function App() {
       if (!created) throw new Error("Nepodařilo se vytvořit jedinečný kód místnosti.");
       setRoomCode(code);
       setRoomInput(code);
-      setMessage("Místnost byla vytvořena.");
+      setMessage("Místnost byla vytvořena. Můžeš pozvat až dalších 5 hráčů.");
     } catch (err) {
       console.error(err);
       setError("Místnost se nepodařilo vytvořit. Zkontroluj nastavení Firestore a jeho pravidla.");
@@ -118,14 +118,15 @@ export default function App() {
         const snapshot = await transaction.get(roomRef);
         if (!snapshot.exists()) throw new Error("Místnost s tímto kódem neexistuje.");
         const data = snapshot.data();
-        if (data.players?.some((player) => player.uid === user.uid)) return;
-        if (data.status !== "waiting" || data.players?.length !== 1 || data.guestUid) {
-          throw new Error("Tato místnost už je obsazená nebo hra začala.");
-        }
+        const players = Array.isArray(data.players) ? data.players : [];
+        if (players.some((player) => player.uid === user.uid)) return;
+        if (data.status !== "waiting") throw new Error("Tato hra už začala.");
+        if (players.length >= MAX_PLAYERS) throw new Error("Místnost je plná. Maximální počet je 6 hráčů.");
         transaction.update(roomRef, {
-          guestUid: user.uid,
-          players: [...data.players, { uid: user.uid, name: nickname.trim() || "Hráč 2" }],
-          status: "ready"
+          players: [...players, {
+            uid: user.uid,
+            name: nickname.trim() || `Hráč ${players.length + 1}`
+          }]
         });
       });
       setRoomCode(code);
@@ -139,6 +140,7 @@ export default function App() {
   }
 
   const isMember = !!room && !!user && room.players?.some((player) => player.uid === user.uid);
+  const playerCount = room?.players?.length ?? 0;
 
   return (
     <main className="page">
@@ -187,27 +189,32 @@ export default function App() {
           <div className="room-title">
             <div>
               <p className="eyebrow">HERNÍ MÍSTNOST</p>
-              <h2>{room.status === "ready" ? "Oba hráči jsou připraveni" : "Čekáme na druhého hráče"}</h2>
+              <h2>Čekáme na hráče ({playerCount}/{MAX_PLAYERS})</h2>
             </div>
-            <span className={`state ${room.status}`}>{room.status === "ready" ? "PŘIPRAVENO" : "ČEKÁNÍ"}</span>
+            <span className="state waiting">ČEKÁNÍ</span>
           </div>
-          <p className="code-label">KÓD PRO DRUHÉHO HRÁČE</p>
+          <p className="code-label">KÓD PRO OSTATNÍ HRÁČE</p>
           <div className="code">{room.code}</div>
           <button className="copy" onClick={() => navigator.clipboard?.writeText(room.code)}>Kopírovat kód</button>
           <div className="players">
-            {room.players?.map((player, index) => (
-              <div className="player" key={player.uid}>
-                <div className="avatar">{index + 1}</div>
-                <div><strong>{player.name}</strong><small>{player.uid === user.uid ? "Toto zařízení" : "Druhý hráč"}</small></div>
-                <span className="online">● online</span>
-              </div>
-            ))}
-            {room.players?.length < 2 && (
-              <div className="player waiting"><div className="avatar">?</div><div><strong>Volné místo</strong><small>Čeká na druhého hráče</small></div></div>
-            )}
+            {Array.from({ length: MAX_PLAYERS }, (_, index) => {
+              const player = room.players?.[index];
+              return (
+                <div className={player ? "player" : "player waiting"} key={player?.uid || `empty-${index}`}>
+                  <div className="avatar">{player ? index + 1 : "?"}</div>
+                  <div>
+                    <strong>{player ? player.name : "Volné místo"}</strong>
+                    <small>{player ? (player.uid === user.uid ? "Toto zařízení" : "Připojený hráč") : "Čeká na hráče"}</small>
+                  </div>
+                  {player && <span className="online">● připojen</span>}
+                </div>
+              );
+            })}
           </div>
-          {room.status === "ready" && (
-            <div className="success">Skvělé! Oba hráči jsou ve stejné místnosti. Dalším krokem bude společná herní mapa.</div>
+          {playerCount === MAX_PLAYERS ? (
+            <div className="success">Místnost je plná! Všech šest hráčů je připojeno.</div>
+          ) : (
+            <div className="success">Místnost je připravena pro 1 až 6 hráčů. Hru lze později rozšířit i o samostatné hraní.</div>
           )}
         </section>
       )}
