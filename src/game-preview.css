@@ -1,0 +1,66 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap');
+
+.game-preview { min-height:100vh; padding:24px clamp(14px,3vw,42px) 18px; color:#edf2e9; background:radial-gradient(ellipse at 50% 0%,#294235 0%,#17251f 48%,#101915 100%); font-family:'DM Sans',sans-serif; }
+.game-preview * { box-sizing:border-box; }
+.preview-header { max-width:1280px; margin:0 auto 30px; display:flex; align-items:center; justify-content:space-between; gap:16px; }
+.preview-back,.flip-board { color:#e6ddbf; background:#34483a; border:1px solid #63745d; border-radius:10px; padding:10px 13px; font-weight:700; cursor:pointer; }
+.preview-brand { display:flex; align-items:center; gap:12px; }
+.preview-brand>span { display:grid; place-items:center; width:48px; height:48px; border:1px solid #bda66c; border-radius:14px; color:#d8c38b; font-size:30px; background:#283a30; }
+.preview-brand small,.preview-kicker,.panel-topline small,.mini-heading small { color:#c8b47b; letter-spacing:.14em; font-size:9px; font-weight:700; }
+.preview-brand h1 { margin:1px 0 0; color:#f4f0df; font:700 27px 'Playfair Display',serif; }
+.round-pill { border:1px solid #8f8055; border-radius:30px; padding:9px 14px; color:#e7d39a; background:#4b493033; font-weight:700; white-space:nowrap; }
+.preview-intro { max-width:1280px; margin:0 auto 22px; display:flex; justify-content:space-between; align-items:center; gap:18px; }
+.preview-intro h2 { margin:5px 0; color:#f3eedb; font:700 clamp(25px,4vw,34px) 'Playfair Display',serif; }
+.preview-intro p:not(.preview-kicker) { margin:0; color:#aebbb0; font-size:13px; }
+.preview-kicker { margin:0; }
+.action-counter { display:flex; align-items:center; gap:10px; border:1px solid #a8955b66; border-radius:15px; padding:10px 16px; background:#1c2b23; }
+.action-counter strong { color:#e7d39a; font-size:28px; }
+.action-counter span { max-width:66px; color:#aebba9; font-size:10px; line-height:1.25; }
+.preview-layout { max-width:1280px; margin:0 auto; display:grid; grid-template-columns:minmax(0,1.55fr) minmax(300px,.85fr); gap:18px; align-items:start; }
+.map-panel,.mini-panel { border:1px solid rgba(205,187,133,.2); border-radius:19px; padding:20px; background:rgba(28,43,35,.94); box-shadow:0 18px 55px #07100b55; }
+.panel-topline,.board-title-row { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+.panel-topline h3,.mini-heading h3 { margin:4px 0 0; color:#f3eedb; font:600 19px 'Playfair Display',serif; }
+.map-key { color:#9cac9e; font-size:10px; }
+.hex-map { position:relative; height:440px; margin:12px 0 4px; overflow:hidden; border-radius:14px; background:radial-gradient(ellipse at center,#304a39 0%,#1b2d23 70%); border:1px solid #415747; }
+.hex-tile { position:absolute; transform:translate(-50%,-50%); width:clamp(64px,8vw,91px); height:clamp(58px,7.2vw,80px); clip-path:polygon(25% 4%,75% 4%,100% 50%,75% 96%,25% 96%,0 50%); display:flex; flex-direction:column; justify-content:center; align-items:center; gap:2px; border:0; color:#f4f0df; cursor:pointer; text-shadow:0 1px 3px #102017; }
+.hex-tile span { font-size:23px; line-height:1.1; }
+.hex-tile small { max-width:90%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:7px; font-weight:700; }
+.terrain-hidden { background:#52634b; color:#d6d5ad; border:1px solid #a9b18b; }
+.terrain-start { background:#947c4b; }.terrain-forest { background:#315b3d; }.terrain-meadow { background:#71864a; }.terrain-rock { background:#68736c; }.terrain-water { background:#39758a; }.terrain-gold { background:#987b35; }
+.hex-tile.is-next { outline:2px solid #e6d394; outline-offset:2px; filter:brightness(1.15); }
+.hex-tile.is-current { filter:brightness(1.22); box-shadow:0 0 0 3px #f0d68c; }
+.player-figure { width:12px; height:12px; border:2px solid #f7e7b6; border-radius:50%; background:#c75d50; box-shadow:0 0 9px #f5df9a; }
+.map-legend { display:flex; flex-wrap:wrap; gap:12px; padding:8px 0 12px; color:#aebba9; font-size:9px; }
+.map-legend span { display:flex; align-items:center; gap:5px; }
+.map-legend i { width:9px; height:9px; display:inline-block; border-radius:3px; background:#52634b; }.map-legend .legend-current { background:#c75d50; }.map-legend .legend-next { background:#d8c38b; }
+.game-message { display:flex; gap:9px; align-items:center; padding:12px; border:1px solid #8e805544; border-radius:10px; background:#111d17; color:#d7dfd4; font-size:12px; line-height:1.45; }
+.game-message span { color:#e7d39a; }
+.map-actions { display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:13px; }
+.map-actions button { border:0; border-radius:10px; padding:11px 14px; color:#1d2a20; background:linear-gradient(135deg,#dfd09e,#b9a46b); font-weight:700; cursor:pointer; }
+.map-actions button:disabled { opacity:.5; cursor:not-allowed; }.map-actions small { color:#8fa195; font-size:9px; text-align:right; }
+.side-panels { display:grid; gap:16px; }
+.mini-heading { display:flex; align-items:center; gap:10px; }
+.mini-heading>span { display:grid; place-items:center; width:39px; height:39px; border:1px solid #8f805566; border-radius:11px; background:#34483a; font-size:20px; }
+.resource-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:6px; margin-top:17px; }
+.resource { display:flex; flex-direction:column; align-items:center; gap:4px; border:1px solid #415747; border-radius:10px; padding:9px 3px; background:#142119; }
+.resource span { font-size:19px; }.resource small { color:#9eae9f; font-size:8px; }.resource strong { color:#f0dfa9; font-size:16px; }
+.capacity-note,.merchant-note { margin:12px 0 0; color:#8fa195; font-size:10px; line-height:1.5; }
+.player-board { border-color:#bda66c66; background:linear-gradient(145deg,#26392e,#1a2a21); }
+.board-title-row { align-items:flex-start; }.flip-board { font-size:9px; padding:8px 9px; white-space:nowrap; }
+.player-status { display:flex; align-items:center; gap:8px; margin:15px 0 10px; color:#e9e5d2; font-size:11px; }
+.player-dot { width:9px; height:9px; border-radius:50%; background:#c75d50; box-shadow:0 0 8px #c75d50; }.player-color { margin-left:auto; color:#c75d50; }
+.board-section { margin-top:10px; padding:11px 12px; border:1px solid #52634b88; border-radius:10px; background:#14211999; }
+.board-section>b { display:block; margin-bottom:7px; color:#e4d39a; font-size:11px; }
+.board-section p { margin:4px 0 0; color:#b8c4b8; font-size:10px; line-height:1.5; }
+.empty-inventory { min-height:30px; color:#829486!important; font-style:italic; }
+.equipment-slots { display:grid; grid-template-columns:repeat(2,1fr); gap:6px; }
+.equipment-slots span { padding:7px; border:1px dashed #64765e; border-radius:7px; color:#b8c4b8; font-size:9px; }
+.condition-row { display:flex; justify-content:space-between; margin:7px 0 4px; color:#aebba9; font-size:10px; }.condition-row strong { color:#e7d39a; }
+.condition-track { height:5px; overflow:hidden; border-radius:5px; background:#405144; }.condition-track i { display:block; height:100%; background:#c75d50; }.condition-track.fatigue i { background:#d2ad54; }
+.board-stats { background:#25372b; }
+.merchant-card { border-color:#8f805566; }
+.merchant-rate { display:flex; justify-content:space-between; align-items:center; gap:8px; margin-top:15px; padding:12px; border-radius:10px; background:#142119; color:#e9e5d2; font-size:12px; }
+.merchant-rate strong { color:#e7d39a; white-space:nowrap; }
+.preview-footer { max-width:1280px; margin:18px auto 0; color:#718276; font-size:10px; text-align:center; }
+@media(max-width:850px) { .preview-layout { grid-template-columns:1fr; }.side-panels { grid-template-columns:repeat(2,minmax(0,1fr)); }.hex-map { height:410px; } }
+@media(max-width:560px) { .game-preview { padding:16px 10px; }.preview-header { flex-wrap:wrap; margin-bottom:22px; }.preview-back { order:2; }.round-pill { order:3; }.preview-brand { order:1; }.preview-intro { align-items:flex-start; }.side-panels { grid-template-columns:1fr; }.map-panel,.mini-panel { padding:14px; }.hex-map { height:350px; }.hex-tile { width:65px; height:59px; }.hex-tile span { font-size:19px; }.map-actions { align-items:flex-start; flex-direction:column; }.map-actions small { text-align:left; }.resource-grid { gap:4px; } }
