@@ -1,1 +1,0 @@
-Testovací soubor pro ověření oprávnění zápisu. Bude ihned odstraněn.
