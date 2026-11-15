@@ -31,7 +31,8 @@ export default function GamePreview({ onBack }) {
   const [actions, setActions] = useState(2);
   const [round, setRound] = useState(1);
   const [message, setMessage] = useState("Vydej se na sousední políčko a odhal, co se skrývá v krajině.");
-  const [resources, setResources] = useState({ wood: 2, stone: 2, food: 2, water: 1, gold: 0 });
+  const [resources] = useState({ wood: 2, stone: 2, food: 2, water: 1, gold: 0 });
+  const [boardSide, setBoardSide] = useState("front");
 
   const tileByKey = useMemo(() => new Map(TILES.map(tile => [`${tile.q},${tile.r}`, tile])), []);
   const currentTile = tileByKey.get(position);
@@ -111,13 +112,34 @@ export default function GamePreview({ onBack }) {
             <p className="capacity-note">Ukázkové počáteční zásoby. Voda má vlastní úložiště ve studni.</p>
           </section>
 
-          <section className="mini-panel player-card">
-            <div className="mini-heading"><span>🧑‍🌾</span><div><small>HRÁČSKÁ KARTIČKA</small><h3>Tvůj osadník</h3></div></div>
-            <div className="player-status"><span className="player-dot" /> Hráč 1 <span className="player-color">●</span></div>
-            <div className="card-section"><b>🎒 Batoh</b><p>Zatím prázdný – nalezené předměty se zobrazí zde.</p></div>
-            <div className="card-section"><b>⚔️ Výbava</b><p>Zbraň · Štít · Brnění · Amulet</p></div>
-            <div className="card-section"><b>🩹 Stav</b><p>Zranění: 0/4 <span>Únava: 0/2</span></p></div>
-            <div className="card-section"><b>🧺 Ceník kupce</b><p>3 dřeva / kameny / jídla = 1 zlato</p><small>Ostatní směnné kurzy doplníme po jejich schválení.</small></div>
+          <section className="mini-panel player-board">
+            <div className="board-title-row">
+              <div className="mini-heading"><span>🧑‍🌾</span><div><small>OSOBNÍ DESKA HRÁČE</small><h3>Tvůj osadník</h3></div></div>
+              <button className="flip-board" onClick={() => setBoardSide(side => side === "front" ? "back" : "front")}>↻ {boardSide === "front" ? "Zadní strana" : "Přední strana"}</button>
+            </div>
+            {boardSide === "front" ? (
+              <>
+                <div className="player-status"><span className="player-dot" /> Hráč 1 <span className="player-color">●</span></div>
+                <div className="board-section"><b>🎒 Inventář – batoh</b><p className="empty-inventory">Zatím prázdný. Nalezené předměty se budou zobrazovat zde.</p></div>
+                <div className="board-section"><b>⚔️ Osobní výbava</b><div className="equipment-slots"><span>🗡️ Zbraň</span><span>🛡️ Štít</span><span>🥋 Brnění</span><span>📿 Amulet</span></div></div>
+                <div className="board-section"><b>🩹 Zranění a únava</b><div className="condition-row"><span>Zranění</span><strong>0 / 4</strong></div><div className="condition-track"><i style={{width:"0%"}} /></div><div className="condition-row"><span>Únava</span><strong>0 / 2</strong></div><div className="condition-track fatigue"><i style={{width:"0%"}} /></div></div>
+                <div className="board-section board-stats"><b>🐉 Dračí přízeň a osobní statistiky</b><p>Dračí přízeň: 0</p><p>Objevené hexagony: 0 · Postavené budovy: 0</p></div>
+              </>
+            ) : (
+              <>
+                <div className="board-section"><b>🎲 Přehled akcí</b><p>Průzkum · Pohyb · Stavba · Vylepšení · Obchod · Léčení · Odpočinek</p></div>
+                <div className="board-section"><b>🧭 Základní pravidla tahu</b><p>V multiplayeru má každý hráč 2 akce za kolo. Každá akce se provede samostatně.</p></div>
+                <div className="board-section"><b>🗺️ Symboly a terény</b><p>🌲 Les – dřevo · ⛰️ Skály – kámen · 🌼 Louka – farma · 💧 Voda – rybář</p></div>
+                <div className="board-section"><b>❤️ Léčení a odpočinek</b><p>Bylina: 1 zranění · Lektvar: 2 zranění · Krystal: 3 zranění. Odpočinek odstraní 1 únavu.</p></div>
+              </>
+            )}
+          </section>
+
+          <section className="mini-panel merchant-card">
+            <div className="mini-heading"><span>🧺</span><div><small>SAMOSTATNÁ POMŮCKA</small><h3>Ceník kupce</h3></div></div>
+            <div className="merchant-rate"><span>3 🪵 / 3 🪨 / 3 🍎</span><strong>→ 1 🪙</strong></div>
+            <p className="capacity-note">Potvrzená směna: tři kusy dřeva, kamene nebo jídla za jedno zlato.</p>
+            <p className="merchant-note">Další nákupní a směnné kurzy doplníme až po jejich schválení.</p>
           </section>
         </aside>
       </div>
