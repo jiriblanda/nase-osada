@@ -24,6 +24,12 @@ const TILES = [
   { q: 2, r: -2, type: "rock", name: "Skály", icon: "🪨", road: true }
 ];
 const DIRECTIONS = [[1, 0], [1, -1], [0, -1], [-1, 0], [-1, 1], [0, 1]];
+const ROAD_EDGES = [[96, 50], [73, 8], [27, 8], [4, 50], [27, 92], [73, 92]];
+function roadDirections(tile) {
+  return DIRECTIONS.map(([dq, dr], index) =>
+    TILES.some(other => other.q === tile.q + dq && other.r === tile.r + dr) ? index : -1
+  ).filter(index => index >= 0);
+}
 
 export default function GamePreview({ onBack, mode = "multi" }) {
   const isSolo = mode === "solo";
@@ -81,7 +87,7 @@ export default function GamePreview({ onBack, mode = "multi" }) {
 
       <div className="preview-layout">
         <section className="map-panel">
-          <div className="panel-topline"><div><small>MAPA OSADY</small><h3>Prozkoumaná krajina</h3></div><span className="map-key">⬡ Hexová mapa</span></div>
+          <div className="panel-topline"><div><small>MAPA OSADY</small><h3>Prozkoumaná krajina</h3></div><span className="map-key">⬡ Hexová mapa · cesty propojují políčka</span></div>
           <div className="hex-map">
             {TILES.map(tile => {
               const key = `${tile.q},${tile.r}`;
@@ -96,15 +102,24 @@ export default function GamePreview({ onBack, mode = "multi" }) {
                 onClick={() => known ? setMessage(tile.name + (here ? " – právě zde stojíš." : ".")) : explore(tile)}
                 title={known ? tile.name : "Neprozkoumané políčko"}
               >
-                <span>{known ? tile.icon : "?"}</span>
+                {known && <svg className="hex-roads" viewBox="0 0 100 100" aria-hidden="true">
+                  {roadDirections(tile).map(direction => {
+                    const [x, y] = ROAD_EDGES[direction];
+                    return <g key={direction}>
+                      <line x1="50" y1="50" x2={x} y2={y} className="road-shadow" />
+                      <line x1="50" y1="50" x2={x} y2={y} className="road-surface" />
+                    </g>;
+                  })}
+                </svg>}
+                <span className="tile-icon">{known ? tile.icon : "?"}</span>
                 {here && <i className="player-figure" />}
                 {known && <small>{tile.type === "start" ? "STAN" : tile.name}</small>}
               </button>;
             })}
           </div>
-          <div className="map-legend"><span><i className="legend-current" /> Tvoje poloha</span><span><i className="legend-hidden" /> Neprozkoumáno</span><span><i className="legend-next" /> Dostupný průzkum</span></div>
+          <div className="map-legend"><span><i className="legend-current" /> Tvoje poloha</span><span><i className="legend-hidden" /> Neprozkoumáno</span><span><i className="legend-next" /> Dostupný průzkum</span><span><i className="legend-road" /> Cesta</span></div>
           <div className="game-message"><span>✦</span>{message}</div>
-          <div className="map-actions"><button onClick={nextRound} disabled={actions > 0}>Ukončit kolo a pokračovat</button><small>Každý průzkum sousedního hexu stojí 1 akci.</small></div>
+          <div className="map-actions"><button onClick={nextRound} disabled={actions > 0}>Ukončit kolo a pokračovat</button><small>Pohyb i průzkum probíhá po propojených cestách. Každý sousední hex stojí 1 akci.</small></div>
         </section>
 
         <aside className="side-panels">
