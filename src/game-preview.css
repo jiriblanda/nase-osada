@@ -64,3 +64,8 @@
 .preview-footer { max-width:1280px; margin:18px auto 0; color:#718276; font-size:10px; text-align:center; }
 @media(max-width:850px) { .preview-layout { grid-template-columns:1fr; }.side-panels { grid-template-columns:repeat(2,minmax(0,1fr)); }.hex-map { height:410px; } }
 @media(max-width:560px) { .game-preview { padding:16px 10px; }.preview-header { flex-wrap:wrap; margin-bottom:22px; }.preview-back { order:2; }.round-pill { order:3; }.preview-brand { order:1; }.preview-intro { align-items:flex-start; }.side-panels { grid-template-columns:1fr; }.map-panel,.mini-panel { padding:14px; }.hex-map { height:350px; }.hex-tile { width:65px; height:59px; }.hex-tile span { font-size:19px; }.map-actions { align-items:flex-start; flex-direction:column; }.map-actions small { text-align:left; }.resource-grid { gap:4px; } }
+
+.preview-launch-secondary { margin-top:8px; background:transparent; }
+.preview-launch-secondary:hover { background:#34483a; }
+.action-counter { flex-wrap:wrap; }
+.action-counter small { flex-basis:100%; margin-left:38px; color:#8fa195; font-size:9px; }
