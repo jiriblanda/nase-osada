@@ -24,6 +24,14 @@
 .hex-map { position:relative; height:440px; margin:12px 0 4px; overflow:hidden; border-radius:14px; background:radial-gradient(ellipse at center,#304a39 0%,#1b2d23 70%); border:1px solid #415747; }
 .hex-tile { position:absolute; transform:translate(-50%,-50%); width:clamp(64px,8vw,91px); height:clamp(58px,7.2vw,80px); clip-path:polygon(25% 4%,75% 4%,100% 50%,75% 96%,25% 96%,0 50%); display:flex; flex-direction:column; justify-content:center; align-items:center; gap:2px; border:0; color:#f4f0df; cursor:pointer; text-shadow:0 1px 3px #102017; }
 .hex-tile span { font-size:23px; line-height:1.1; }
+.hex-roads { position:absolute; inset:0; width:100%; height:100%; z-index:0; pointer-events:none; }
+.hex-roads line { stroke-linecap:round; }
+.hex-roads .road-shadow { stroke:#514733; stroke-width:12; opacity:.9; }
+.hex-roads .road-surface { stroke:#d8c69a; stroke-width:7; }
+.hex-tile .tile-icon { position:relative; z-index:1; font-size:23px; line-height:1.1; filter:drop-shadow(0 1px 2px #182018); }
+.hex-tile small { position:relative; z-index:1; }
+.player-figure { position:relative; z-index:2; }
+
 .hex-tile small { max-width:90%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:7px; font-weight:700; }
 .terrain-hidden { background:#52634b; color:#d6d5ad; border:1px solid #a9b18b; }
 .terrain-start { background:#947c4b; }.terrain-forest { background:#315b3d; }.terrain-meadow { background:#71864a; }.terrain-rock { background:#68736c; }.terrain-water { background:#39758a; }.terrain-gold { background:#987b35; }
@@ -32,7 +40,7 @@
 .player-figure { width:12px; height:12px; border:2px solid #f7e7b6; border-radius:50%; background:#c75d50; box-shadow:0 0 9px #f5df9a; }
 .map-legend { display:flex; flex-wrap:wrap; gap:12px; padding:8px 0 12px; color:#aebba9; font-size:9px; }
 .map-legend span { display:flex; align-items:center; gap:5px; }
-.map-legend i { width:9px; height:9px; display:inline-block; border-radius:3px; background:#52634b; }.map-legend .legend-current { background:#c75d50; }.map-legend .legend-next { background:#d8c38b; }
+.map-legend i { width:9px; height:9px; display:inline-block; border-radius:3px; background:#52634b; }.map-legend .legend-current { background:#c75d50; }.map-legend .legend-next { background:#d8c38b; }.map-legend .legend-road { background:#d8c69a; border:1px solid #514733; }
 .game-message { display:flex; gap:9px; align-items:center; padding:12px; border:1px solid #8e805544; border-radius:10px; background:#111d17; color:#d7dfd4; font-size:12px; line-height:1.45; }
 .game-message span { color:#e7d39a; }
 .map-actions { display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:13px; }
