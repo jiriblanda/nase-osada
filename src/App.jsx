@@ -7,6 +7,7 @@ import {
   setDoc
 } from "firebase/firestore";
 import { db, ensureSignedIn } from "./firebase.js";
+import GamePreview from "./GamePreview.jsx";
 
 const MAX_PLAYERS = 6;
 
@@ -24,6 +25,7 @@ export default function App() {
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("Připravuji připojení…");
   const [error, setError] = useState("");
+  const [showPreview, setShowPreview] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -142,6 +144,8 @@ export default function App() {
   const isMember = !!room && !!user && room.players?.some((player) => player.uid === user.uid);
   const playerCount = room?.players?.length ?? 0;
 
+  if (showPreview) return <GamePreview onBack={() => setShowPreview(false)} />;
+
   return (
     <main className="page">
       <header className="top">
@@ -182,6 +186,9 @@ export default function App() {
         </div>
         {error && <p className="error">{error}</p>}
         <p className="status">{message}</p>
+        <button className="preview-launch" onClick={() => setShowPreview(true)}>
+          ✦  Prohlédnout herní náhled
+        </button>
       </section>
 
       {room && isMember && (
