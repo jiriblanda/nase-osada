@@ -25,10 +25,12 @@ const TILES = [
 ];
 const DIRECTIONS = [[1, 0], [1, -1], [0, -1], [-1, 0], [-1, 1], [0, 1]];
 
-export default function GamePreview({ onBack }) {
+export default function GamePreview({ onBack, mode = "multi" }) {
+  const isSolo = mode === "solo";
+  const actionsPerRound = isSolo ? 4 : 2;
   const [revealed, setRevealed] = useState(["0,0"]);
   const [position, setPosition] = useState("0,0");
-  const [actions, setActions] = useState(2);
+  const [actions, setActions] = useState(actionsPerRound);
   const [round, setRound] = useState(1);
   const [message, setMessage] = useState("Vydej se na sousední políčko a odhal, co se skrývá v krajině.");
   const [resources] = useState({ wood: 2, stone: 2, food: 2, water: 1, gold: 0 });
@@ -54,8 +56,8 @@ export default function GamePreview({ onBack }) {
 
   function nextRound() {
     setRound(value => value + 1);
-    setActions(2);
-    setMessage("Začíná nové kolo. V ukázce se nyní obnovily 2 akce.");
+    setActions(actionsPerRound);
+    setMessage(`Začíná nové kolo. Obnovily se ${actionsPerRound} akce.`);
   }
 
   const resourceItems = [
@@ -68,13 +70,13 @@ export default function GamePreview({ onBack }) {
     <main className="game-preview">
       <header className="preview-header">
         <button className="preview-back" onClick={onBack}>← Zpět do čekárny</button>
-        <div className="preview-brand"><span>⌂</span><div><small>TESTOVACÍ REŽIM</small><h1>Naše osada</h1></div></div>
+        <div className="preview-brand"><span>⌂</span><div><small>{isSolo ? "SÓLO TESTOVACÍ REŽIM" : "MULTIPLAYER TESTOVACÍ REŽIM"}</small><h1>Naše osada</h1></div></div>
         <div className="round-pill">Kolo {round}</div>
       </header>
 
       <section className="preview-intro">
-        <div><p className="preview-kicker">PRVNÍ HERNÍ NÁHLED</p><h2>Začíná dobrodružství</h2><p>Prozkoumej okolí společného stanu a připrav místo pro svou osadu.</p></div>
-        <div className="action-counter"><strong>{actions}</strong><span>akce zbývají</span></div>
+        <div><p className="preview-kicker">{isSolo ? "SÓLO HRA · 1 HRÁČ" : "HERNÍ NÁHLED · 2–6 HRÁČŮ"}</p><h2>Začíná dobrodružství</h2><p>Prozkoumej okolí společného stanu a připrav místo pro svou osadu.</p></div>
+        <div className="action-counter"><strong>{actions}</strong><span>akce zbývají</span><small>{actionsPerRound} za kolo</small></div>
       </section>
 
       <div className="preview-layout">
@@ -128,7 +130,7 @@ export default function GamePreview({ onBack }) {
             ) : (
               <>
                 <div className="board-section"><b>🎲 Přehled akcí</b><p>Průzkum · Pohyb · Stavba · Vylepšení · Obchod · Léčení · Odpočinek</p></div>
-                <div className="board-section"><b>🧭 Základní pravidla tahu</b><p>V multiplayeru má každý hráč 2 akce za kolo. Každá akce se provede samostatně.</p></div>
+                <div className="board-section"><b>🧭 Základní pravidla tahu</b><p>{isSolo ? "V sólo hře máš 4 akce za kolo. Každou akci provedeš samostatně." : "V multiplayeru má každý hráč 2 akce za kolo. Každá akce se provede samostatně."}</p></div>
                 <div className="board-section"><b>🗺️ Symboly a terény</b><p>🌲 Les – dřevo · ⛰️ Skály – kámen · 🌼 Louka – farma · 💧 Voda – rybář</p></div>
                 <div className="board-section"><b>❤️ Léčení a odpočinek</b><p>Bylina: 1 zranění · Lektvar: 2 zranění · Krystal: 3 zranění. Odpočinek odstraní 1 únavu.</p></div>
               </>
@@ -143,7 +145,7 @@ export default function GamePreview({ onBack }) {
           </section>
         </aside>
       </div>
-      <footer className="preview-footer">Náhled herních prvků • Změny v tomto režimu se neukládají ani nesynchronizují.</footer>
+      <footer className="preview-footer">{isSolo ? "Sólo testovací režim · 1 hráč · 4 akce za kolo" : "Multiplayerový náhled · 2–6 hráčů · 2 akce na hráče"} • Změny v tomto náhledu se neukládají ani nesynchronizují.</footer>
     </main>
   );
 }
