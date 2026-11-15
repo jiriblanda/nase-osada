@@ -26,6 +26,7 @@ export default function App() {
   const [message, setMessage] = useState("Připravuji připojení…");
   const [error, setError] = useState("");
   const [showPreview, setShowPreview] = useState(false);
+  const [previewMode, setPreviewMode] = useState("multi");
 
   useEffect(() => {
     let active = true;
@@ -144,7 +145,7 @@ export default function App() {
   const isMember = !!room && !!user && room.players?.some((player) => player.uid === user.uid);
   const playerCount = room?.players?.length ?? 0;
 
-  if (showPreview) return <GamePreview onBack={() => setShowPreview(false)} />;
+  if (showPreview) return <GamePreview mode={previewMode} onBack={() => setShowPreview(false)} />;
 
   return (
     <main className="page">
@@ -186,8 +187,11 @@ export default function App() {
         </div>
         {error && <p className="error">{error}</p>}
         <p className="status">{message}</p>
-        <button className="preview-launch" onClick={() => setShowPreview(true)}>
-          ✦  Prohlédnout herní náhled
+        <button className="preview-launch" onClick={() => { setPreviewMode("solo"); setShowPreview(true); }}>
+          ♟  Spustit sólo hru · 1 hráč / 4 akce
+        </button>
+        <button className="preview-launch preview-launch-secondary" onClick={() => { setPreviewMode("multi"); setShowPreview(true); }}>
+          ✦  Prohlédnout multiplayerový náhled
         </button>
       </section>
 
