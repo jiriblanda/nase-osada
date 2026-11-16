@@ -1,0 +1,80 @@
+<!DOCTYPE html><html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Zapomenutý kraj – Kde stíny šeptají | Poslech</title><meta name="description" content="Příběh deskové hry Zapomenutý kraj. Poslechněte si pohádkové vyprávění s hudbou."><meta property="og:title" content="Zapomenutý kraj – Kde stíny šeptají"><meta property="og:description" content="Příběh deskové hry s mužským vypravěčem a hudebním podkresem."><meta property="og:type" content="website"><style>
+:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 50% 10%,#293042 0,#131825 58%,#0c1018);color:#f3ead7;font:16px/1.6 system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:22px}.card{width:100%;max-width:520px;border:1px solid #4e5260;background:#171d2b;border-radius:24px;padding:30px 24px;box-shadow:0 20px 60px #0007}.eyebrow{color:#b4a481;letter-spacing:.13em;text-transform:uppercase;font-size:12px;text-align:center}h1{font-family:Georgia,serif;text-align:center;font-weight:400;font-size:32px;line-height:1.2;margin:14px auto 6px}h2{font-family:Georgia,serif;text-align:center;font-weight:400;font-style:italic;color:#d4b985;font-size:20px;margin:0 0 28px}.orb{width:90px;height:90px;border-radius:50%;margin:auto auto 20px;background:radial-gradient(circle at 36% 33%,#bcbdac,#5d6677 35%,#202735 75%);box-shadow:0 0 50px #e5c48f19}button{display:block;width:100%;padding:16px 20px;border:0;border-radius:14px;background:#b9a47a;color:#171d25;font-size:18px;font-weight:700;cursor:pointer}button:active{transform:scale(.99)}.bar{display:flex;justify-content:space-between;color:#bcb5ab;font-size:13px;margin-top:16px}.range{width:100%;margin:12px 0 0;accent-color:#c5b083}.control{margin:20px 0 0}.control label{display:flex;justify-content:space-between;color:#dcd5c8;font-size:14px}.note{color:#aab0bb;font-size:13px;line-height:1.5;margin:24px 0 0;text-align:center}.error{color:#ffd1bc;min-height:22px;margin-top:12px;font-size:13px}
+</style></head><body><main class="card"><div class="eyebrow">Příběhové vyprávění</div><div class="orb" aria-hidden="true"></div><h1>Zapomenutý kraj</h1><h2>Kde stíny šeptají</h2><button id="play">▶ Přehrát s hudbou</button><div class="bar"><span id="elapsed">0:00</span><span>3:37</span></div><input type="range" id="seek" class="range" value="0" min="0" max="216.51" step="0.1" aria-label="Pozice přehrávání"><div class="control"><label><span>Jemný hudební podkres</span><span id="volumeText">100 %</span></label><input class="range" type="range" id="volume" min="0" max="100" value="100" step="1" aria-label="Hlasitost hudby"></div><p id="error" class="error"></p><p class="note">První 3 sekundy hraje jen hudba. V závěru zazní pozvánka k deskové hře s hudebními pomlkami. Mužský hlas Craig. K poslechu je potřeba internetové připojení.</p></main>
+<audio id="voice" preload="metadata" src="https://resource2.heygen.ai/text_to_speech/2382c1e5ae774dfc9b06b1dbfe34aba5/eae6fca42aae4b78b992533e96ab43c9/id=f62ebc087105497a81084b2ab366bf19.mp3"></audio><audio id="music" preload="auto" loop src="/nase-osada/zapomenuty-kraj-hudba.mp3"></audio>
+<script>
+const voice=document.getElementById('voice');
+const music=document.getElementById('music');
+const button=document.getElementById('play');
+const vol=document.getElementById('volume');
+const volTxt=document.getElementById('volumeText');
+const seek=document.getElementById('seek');
+const elapsed=document.getElementById('elapsed');
+const error=document.getElementById('error');
+const INTRO=3, VOICE_DURATION=211.11245, OUTRO=2.4, TOTAL=INTRO+VOICE_DURATION+OUTRO;
+let playing=false;
+let narrationStarted=false;
+let finished=false;
+let switching=false;
+let outro=false;
+function ts(n){let s=Math.floor(Math.max(0,n||0));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0')}
+function setVolume(){music.volume=Number(vol.value)/100;volTxt.textContent=vol.value+' %'}
+setVolume();vol.addEventListener('input',setVolume);
+function progress(){
+  const position=finished?TOTAL:outro?Math.min(TOTAL,music.currentTime||0):narrationStarted?Math.min(TOTAL,INTRO+(voice.currentTime||0)):Math.min(INTRO,music.currentTime||0);
+  seek.value=position;elapsed.textContent=ts(position);
+}
+function pauseAll(){playing=false;voice.pause();music.pause();button.textContent='▶ Pokračovat ve vyprávění';progress()}
+async function startVoice(){
+  if(!playing || narrationStarted || switching)return;
+  narrationStarted=true;
+  try{await voice.play();}
+  catch(e){pauseAll();error.textContent='Nahrávku nelze přehrát. Zkontroluj připojení k internetu.'}
+}
+// The introduction is measured by the actual playback clock, not by a timer.
+music.addEventListener('timeupdate',()=>{
+  if(playing&&!narrationStarted&&music.currentTime>=INTRO)startVoice();
+  if(playing&&outro&&music.currentTime>=TOTAL){
+    playing=false;finished=true;music.pause();button.textContent='↻ Přehrát znovu';
+  }
+  if(!narrationStarted||outro)progress();
+});
+voice.addEventListener('timeupdate',()=>{
+  if(narrationStarted&&playing&&Math.abs(music.currentTime-(INTRO+voice.currentTime))>0.5){
+    const desired=INTRO+voice.currentTime;
+    if(desired<music.duration||!Number.isFinite(music.duration))music.currentTime=desired;
+  }
+  progress();
+});
+voice.addEventListener('ended',()=>{
+  outro=true;
+  progress();
+});
+button.addEventListener('click',async()=>{
+  error.textContent='';
+  if(playing){pauseAll();return}
+  if(finished){
+    finished=false;narrationStarted=false;outro=false;voice.currentTime=0;music.currentTime=0;
+  }
+  try{
+    playing=true;
+    await music.play();
+    button.textContent='Ⅱ Pozastavit';
+    if(narrationStarted&&!outro)await voice.play();
+    else if(music.currentTime>=INTRO)await startVoice();
+  }catch(e){pauseAll();error.textContent='Přehrávání se nepodařilo spustit. Zkus otevřít soubor v Chrome.'}
+});
+seek.addEventListener('input',async()=>{
+  const pos=Number(seek.value);finished=false;switching=true;outro=pos>=INTRO+VOICE_DURATION;
+  if(pos<INTRO){
+    voice.pause();voice.currentTime=0;narrationStarted=false;music.currentTime=pos;
+  }else{
+    narrationStarted=true;voice.currentTime=Math.min(VOICE_DURATION,pos-INTRO);
+    if(pos<music.duration||!Number.isFinite(music.duration))music.currentTime=pos;
+  }
+  progress();switching=false;
+  if(playing && narrationStarted && !outro){
+    try{await voice.play();}catch(e){pauseAll();error.textContent='Vyprávění se nepodařilo načíst.'}
+  }
+});
+</script></body></html>
