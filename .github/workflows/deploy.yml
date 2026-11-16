@@ -26,6 +26,16 @@ jobs:
           node-version: 20
       - name: Install dependencies
         run: npm install
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Generate story music
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq libfluidsynth3 timgm6mb-soundfont ffmpeg
+          python -m pip install --disable-pip-version-check numpy
+          python scripts/generate_zapomenuty_kraj_music.py
       - name: Build
         run: npm run build
       - name: Setup Pages
