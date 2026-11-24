@@ -167,60 +167,26 @@ function rock(x,z,s){cyl(x,0,z,s*.55,s*.48,'#8d8f86',6);cone(x,s*.3,z,s*.57,s*.4
 function fence(x,z,r){for(let i=0;i<8;i++){let a=i*2*Math.PI/8,b=(i+1)*2*Math.PI/8,px=x+r*Math.cos(a),pz=z+r*Math.sin(a);cyl(px,0,pz,.09,.8,'#916842',5);let mx=x+r*Math.cos((a+b)/2),mz=z+r*Math.sin((a+b)/2);cyl(mx,.47,mz,.06,.12,'#c6a77a',6)}}
 const st=(()=>{try{return JSON.parse(localStorage.getItem('zk_fps_01'))||{built:0,water:1,wood:2,stone:2,food:2}}catch{return {built:0,water:1,wood:2,stone:2,food:2}}})();function save(){try{localStorage.setItem('zk_fps_01',JSON.stringify(st))}catch{}}
 function buildScene(){seed=42;verts=[];norms=[];colors=[];
- // Continuous world ground with real polygonal geometry, avoiding gaps between tiles
- quad([-65,-.09,-65],[65,-.09,-65],[65,-.09,65],[-65,-.09,65],'#668e51');
- // Differentiated, softly overlapping 3D painted-style biome patches
- const regions=[{x:-23,z:-13,r:14,col:'#426e3f',type:'forest'},{x:22,z:-18,r:14,col:'#77866d',type:'mountain'},{x:22,z:17,r:10,col:'#4f8f73',type:'pond'},{x:-22,z:20,r:13,col:'#bda65d',type:'field'},{x:4,z:-36,r:10,col:'#9c9268',type:'gold'}];
- for(const a of regions)disc(a.x,-.05,a.z,a.r,a.col,22);
- // The three starting places use geometry and positions from the approved tiles
- centers.forEach((p,i)=>disc(p[0],-.025,p[1],7.4,['#719a4a','#759e51','#87a45b'][i],18));
- // painted-style land texture: flowers, rocks, bushes
- for(let i=0;i<12;i++){let x=(rnd()-.5)*110,z=(rnd()-.5)*110;
-  let near=Math.min(...centers.map(a=>Math.hypot(x-a[0],z-a[1])));
-  if(near>2.8&&rnd()>.6)flower3(x,z,['#e9e5ca','#e6b2cc','#dfc96d'][i%3]);
- }
- // Forest: large broadleaf trees + spruce clusters, with a clear construction glade
- for(let i=0;i<12;i++){let x=-23+(rnd()-.5)*27,z=-13+(rnd()-.5)*26;
-  if(Math.hypot(x+23,z+13)<4.8||Math.min(...centers.map(a=>Math.hypot(x-a[0],z-a[1])))<6)continue;
-  if(rnd()>.35)broadleaf(x,z,.72+rnd()*.75);else spruce(x,z,.72+rnd()*.9)}
- standingSite(-23,-13);
- for(let i=0;i<12;i++){let x=(rnd()-.5)*95,z=(rnd()-.5)*95;if(Math.min(...centers.map(a=>Math.hypot(x-a[0],z-a[1])))>8&&Math.hypot(x+23,z+13)>14&&rnd()>.55)spruce(x,z,.6+rnd()*.55)}
- // Mountains: clusters of tall irregular rocky geometry and moss-covered boulders
- for(let i=0;i<12;i++){let x=22+(rnd()-.5)*23,z=-18+(rnd()-.5)*25;
- if(Math.hypot(x-22,z+18)<5)continue;
- tallRock(x,z,.6+rnd()*2.2,i%4?'#777c78':'#8b9186');
- if(rnd()>.42)boulder(x+1.5,z,.6+rnd())}
- standingSite(22,-18);
- // Gold mountain rock veins, deliberately distinct from normal mountain quarry
- for(let i=0;i<9;i++){let x=4+(rnd()-.5)*17,z=-36+(rnd()-.5)*17;
- tallRock(x,z,.8+rnd()*1.5,i%3?'#897c65':'#d5ad59');if(i%3===0)ovoid(x+.4,.75,z,.15,.3,.12,'#e7c35d',6,4)}
- // Field without predetermined built farm, recognizable golden grain
- for(let i=0;i<38;i++){let x=-22+(rnd()-.5)*23,z=20+(rnd()-.5)*23;
- if(Math.hypot(x+22,z-20)<11)wheat(x,z,.8+rnd()*.8)}
- standingSite(-22,20);
- // 3D pond: shallow basin, smooth water surface, stones, reeds and water lilies
- const px=22,pz=17;disc(px,-.035,pz,9.6,'#8ba06a',24);disc(px,.045,pz,8.4,'#4b9fa7',24);disc(px,.055,pz,7.1,'#71bdbe',24);
- for(let i=0;i<14;i++){let a=i*2*Math.PI/14;boulder(px+8.7*Math.cos(a),pz+8.6*Math.sin(a),.35+rnd()*.32);if(i%2===0)reeds(px+9.2*Math.cos(a),pz+9*Math.sin(a))}
- for(let i=0;i<4;i++){let x=px+(rnd()-.5)*12,z=pz+(rnd()-.5)*12;disc(x,.073,z,.36,'#528c58',8);flower3(x,z,'#f4e8cb')}
- // Original campfire: stone circle, stacked logs, flame cones; signpost to the right
- for(let i=0;i<13;i++){let a=i*2*Math.PI/13;boulder(1.18*Math.cos(a),-6.4+1.18*Math.sin(a),.42+rnd()*.14)}
- for(let i=0;i<4;i++){let a=i*Math.PI/2;log3(.45*Math.cos(a),.06,-6.4+.45*Math.sin(a),1)}
- cone(0,.14,-6.4,.76,1.5,'#e67e27',9);cone(.05,.4,-6.4,.52,1.14,'#f2ba43',9);cone(-.06,.6,-6.4,.25,.8,'#ffe17b',7);
- sign3(2.8,-5.8,1);
- // Source reference: water ring and central waterfall between mossy rocks
- streamSpring(-6.9,5.55);
- // Four posts, rectangular-ish earth building patch and carpenter sign, no roads
- standingSite(6.9,5.55);
- if(st.built){let x=6.9,z=5.55;cube(x,.05,z,2.8,.2,2.8,'#947447');
- tri([x-1.5,.2,z-1.3],[x+1.5,.2,z-1.3],[x,2.7,z-1.3],'#c79f72');
- quad([x-1.5,.2,z-1.3],[x,2.7,z-1.3],[x,2.7,z+1.3],[x-1.5,.2,z+1.3],'#d7b88a');
- quad([x,2.7,z-1.3],[x+1.5,.2,z-1.3],[x+1.5,.2,z+1.3],[x,2.7,z+1.3],'#b88e64')}
- // Additional terrain at distance, leaving open visibility from the start
- for(let i=0;i<8;i++){let a=i/8*Math.PI*2,d=48+rnd()*6;cone(Math.cos(a)*d,-.1,Math.sin(a)*d,4+rnd()*4,4+rnd()*6,'#6f8673',8)}
- for(let k of ['p','n','col']){let arr=new Float32Array(k==='p'?verts:k==='n'?norms:colors);if(!buf[k])buf[k]=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buf[k]);gl.bufferData(gl.ARRAY_BUFFER,arr,gl.STATIC_DRAW)}gl.bindBuffer(gl.ARRAY_BUFFER,null);
- for(let k of ['wood','stone','food','water'])document.getElementById(k).textContent=({wood:'Dřevo ',stone:'Kámen ',food:'Jídlo ',water:'Voda '})[k]+st[k];
+quad([-56,-.08,-56],[56,-.08,-56],[56,-.08,56],[-56,-.08,56],'#6c9653');
+for(const p of [[-23,-13,13,'#4c7841'],[22,-18,13,'#929789'],[22,17,10,'#7caa73'],[-22,20,12,'#c1a75a'],[4,-36,10,'#a59570']])disc(p[0],-.06,p[1],p[2],p[3],12);
+for(const p of centers)disc(p[0],-.035,p[1],7.2,'#81a359',12);
+for(let i=0;i<9;i++){const a=i*Math.PI*2/9;rock(1.1*Math.cos(a),-6.4+1.1*Math.sin(a),.3)}
+cone(0,.15,-6.4,.65,1.4,'#e77e28',7);cone(.08,.3,-6.4,.38,1,'#ffd16a',6);sign3(3,-5.8,.9);
+disc(-6.9,.03,5.55,2.9,'#989582',12);disc(-6.9,.07,5.55,2.4,'#64b5bf',12);
+for(let i=0;i<8;i++){const a=i*Math.PI/4;rock(-6.9+2.4*Math.cos(a),5.55+2.4*Math.sin(a),.34)}
+rock(-6.9,4.2,.9);quad([-7.2,.9,4.35],[-6.6,.9,4.35],[-6.5,.1,4.8],[-7.25,.1,4.8],'#85cdd2');
+standingSite(6.9,5.55);if(st.built){cube(6.9,.02,5.55,2.4,.3,2.4,'#987951');cone(6.9,.32,5.55,1.6,2.1,'#c9a06c',4)}
+for(let i=0;i<6;i++){let a=i*Math.PI/3,rad=5+3*rnd();broadleaf(-23+rad*Math.cos(a),-13+rad*Math.sin(a),.75)}
+for(let i=0;i<7;i++){let a=i*2*Math.PI/7; tallRock(22+7*Math.cos(a),-18+7*Math.sin(a),.75+rnd()*.5)}
+for(let i=0;i<5;i++){let a=i*2*Math.PI/5;tallRock(4+6*Math.cos(a),-36+6*Math.sin(a),1,'#ae9965')}
+for(let i=0;i<25;i++){let a=rnd()*6.283,r=4+5*rnd();wheat(-22+r*Math.cos(a),20+r*Math.sin(a),.85)}
+disc(22,.02,17,8,'#529ba4',16);disc(22,.035,17,6.7,'#82c8cc',16);
+for(let i=0;i<7;i++){let a=i*2*Math.PI/7;reeds(22+8*Math.cos(a),17+8*Math.sin(a))}
+for(let i=0;i<9;i++){let a=i*.7,rad=26+rnd()*20;tree(rad*Math.cos(a),rad*Math.sin(a),.8)}
+for(const k of ['p','n','col']){const arr=new Float32Array(k==='p'?verts:k==='n'?norms:colors);if(!buf[k])buf[k]=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,buf[k]);gl.bufferData(gl.ARRAY_BUFFER,arr,gl.STATIC_DRAW)}
+gl.bindBuffer(gl.ARRAY_BUFFER,null);
+for(const k of ['wood','stone','food','water'])document.getElementById(k).textContent=({wood:'Dřevo ',stone:'Kámen ',food:'Jídlo ',water:'Voda '})[k]+st[k];
 }
-
 buildScene();
 function perspective(fov,aspect,n,f){let y=1/Math.tan(fov/2),o=new Float32Array(16);o[0]=y/aspect;o[5]=y;o[10]=(f+n)/(n-f);o[11]=-1;o[14]=(2*f*n)/(n-f);return o}
 function lookAt(eye,target){let z=[eye[0]-target[0],eye[1]-target[1],eye[2]-target[2]];let l=Math.hypot(...z);z=z.map(v=>v/l);let x=[z[2],0,-z[0]];l=Math.hypot(...x);x=x.map(v=>v/l);let y=[z[1]*x[2]-z[2]*x[1],z[2]*x[0]-z[0]*x[2],z[0]*x[1]-z[1]*x[0]];return new Float32Array([x[0],y[0],z[0],0,x[1],y[1],z[1],0,x[2],y[2],z[2],0,-(x[0]*eye[0]+x[1]*eye[1]+x[2]*eye[2]),-(y[0]*eye[0]+y[1]*eye[1]+y[2]*eye[2]),-(z[0]*eye[0]+z[1]*eye[1]+z[2]*eye[2]),1])}
@@ -231,7 +197,7 @@ function nearest(){let targets=[{x:0,z:-6.4,r:3.1,name:'Ohniště',hint:'Přilo�
 function interact(){let v=nearest();if(v)v.action();else notice('Přibliž se k ohništi, prameni nebo stavebnímu místu.')}
 function updateNear(){let n=nearest();if(n){q('near').textContent=n.name+' · '+n.hint;q('interact').style.opacity='1'}else{q('near').textContent='Volný průzkum · lesy, hory, pole a rybník';q('interact').style.opacity='.6'}}
 function mini(){let ctx=q('map').getContext('2d'),w=210,h=210;ctx.clearRect(0,0);let scale=1.35;for(let i=0;i<3;i++){let [x,z]=centers[i];ctx.beginPath();for(let k=0;k<6;k++){let a=(k*60+30)*Math.PI/180,px=w/2+x*scale+7.5*scale*Math.cos(a),py=h/2+z*scale+7.5*scale*Math.sin(a);k?ctx.lineTo(px,py):ctx.moveTo(px,py)}ctx.closePath();ctx.fillStyle=['#466c35','#4c7d64','#86944b'][i];ctx.fill();ctx.strokeStyle='#e4d1a4';ctx.lineWidth=1.8;ctx.stroke();}for(let t of [[0,-6.4,'#edb75f'],[-6.9,5.55,'#82d3e8'],[6.9,5.55,'#e3d0a7']]){ctx.fillStyle=t[2];ctx.beginPath();ctx.arc(w/2+t[0]*scale,h/2+t[1]*scale,6,0,7);ctx.fill()}ctx.save();ctx.translate(w/2+player.x*scale,h/2+player.z*scale);ctx.rotate(player.yaw);ctx.fillStyle='white';ctx.beginPath();ctx.moveTo(0,-10);ctx.lineTo(-6,7);ctx.lineTo(6,7);ctx.closePath();ctx.fill();ctx.restore()}
-function draw(t){let dt=Math.min((t-last)/1000||0,.05);last=t;frames++;if(t-stamp>800){fps=Math.round(frames*1000/Math.max(1,t-stamp));frames=0;stamp=t}let debug=q('debug3d');if(debug)debug.textContent='3D | '+fps+' FPS | X '+player.x.toFixed(1)+' Z '+player.z.toFixed(1)+(keys.w?' | VPŘED':'');let dx=joy.x,dz=-joy.y;if(keys['w']||keys['arrowup'])dz+=1;if(keys['s']||keys['arrowdown'])dz-=1;if(keys['a'])dx-=1;if(keys['d'])dx+=1;if(keys['arrowleft'])player.yaw-=dt*1.5;if(keys['arrowright'])player.yaw+=dt*1.5;let len=Math.hypot(dx,dz);if(len>0){dx/=Math.max(1,len);dz/=Math.max(1,len);let sp=(running||keys['shift']?8.2:5.4)*dt;let vx=Math.cos(player.yaw)*dx+Math.sin(player.yaw)*dz,vz=Math.sin(player.yaw)*dx-Math.cos(player.yaw)*dz;let nx=player.x+vx*sp,nz=player.z+vz*sp;let inside=Math.hypot(nx,nz)<56;if(inside){player.x=nx;player.z=nz}else if(t-msgUntil>1500)notice('Za hranicí startovních hexů čeká další krajina.')}let width=c.clientWidth,height=c.clientHeight,dpr=Math.min(devicePixelRatio||1,1.0);if(c.width!==Math.round(width*dpr)||c.height!==Math.round(height*dpr)){c.width=Math.round(width*dpr);c.height=Math.round(height*dpr);gl.viewport(0,0,c.width,c.height)}gl.clearColor(.51,.67,.69,1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);let eye=[player.x,1.68+Math.sin(t*.007)*(.02+(len>0?.025:0)),player.z],forward=[Math.sin(player.yaw)*Math.cos(player.pitch),Math.sin(player.pitch),-Math.cos(player.yaw)*Math.cos(player.pitch)],target=eye.map((v,i)=>v+forward[i]);let vp=mul(perspective(Math.PI/2.85,c.width/c.height,.08,120),lookAt(eye,target));gl.uniformMatrix4fv(un,false,vp);for(let k of ['p','n','col']){gl.bindBuffer(gl.ARRAY_BUFFER,buf[k]);gl.enableVertexAttribArray(attr[k]);gl.vertexAttribPointer(attr[k],3,gl.FLOAT,false,0,0)}gl.drawArrays(gl.TRIANGLES,0,verts.length/3);if(t>msgUntil)q('message').textContent='';updateNear();mini();requestAnimationFrame(draw)}
+function draw(t){window.__zkLastFrame=performance.now();let dt=Math.min((t-last)/1000||0,.05);last=t;frames++;if(t-stamp>800){fps=Math.round(frames*1000/Math.max(1,t-stamp));frames=0;stamp=t}let debug=q('debug3d');if(debug)debug.textContent='3D | '+fps+' FPS | X '+player.x.toFixed(1)+' Z '+player.z.toFixed(1)+(keys.w?' | VPŘED':'');let dx=joy.x,dz=-joy.y;if(keys['w']||keys['arrowup'])dz+=1;if(keys['s']||keys['arrowdown'])dz-=1;if(keys['a'])dx-=1;if(keys['d'])dx+=1;if(keys['arrowleft'])player.yaw-=dt*1.5;if(keys['arrowright'])player.yaw+=dt*1.5;let len=Math.hypot(dx,dz);if(len>0){dx/=Math.max(1,len);dz/=Math.max(1,len);let sp=(running||keys['shift']?8.2:5.4)*dt;let vx=Math.cos(player.yaw)*dx+Math.sin(player.yaw)*dz,vz=Math.sin(player.yaw)*dx-Math.cos(player.yaw)*dz;let nx=player.x+vx*sp,nz=player.z+vz*sp;let inside=Math.hypot(nx,nz)<56;if(inside){player.x=nx;player.z=nz}else if(t-msgUntil>1500)notice('Za hranicí startovních hexů čeká další krajina.')}let width=c.clientWidth,height=c.clientHeight,dpr=Math.min(devicePixelRatio||1,1.0);if(c.width!==Math.round(width*dpr)||c.height!==Math.round(height*dpr)){c.width=Math.round(width*dpr);c.height=Math.round(height*dpr);gl.viewport(0,0,c.width,c.height)}gl.clearColor(.51,.67,.69,1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);let eye=[player.x,1.68+Math.sin(t*.007)*(.02+(len>0?.025:0)),player.z],forward=[Math.sin(player.yaw)*Math.cos(player.pitch),Math.sin(player.pitch),-Math.cos(player.yaw)*Math.cos(player.pitch)],target=eye.map((v,i)=>v+forward[i]);let vp=mul(perspective(Math.PI/2.85,c.width/c.height,.08,120),lookAt(eye,target));gl.uniformMatrix4fv(un,false,vp);for(let k of ['p','n','col']){gl.bindBuffer(gl.ARRAY_BUFFER,buf[k]);gl.enableVertexAttribArray(attr[k]);gl.vertexAttribPointer(attr[k],3,gl.FLOAT,false,0,0)}gl.drawArrays(gl.TRIANGLES,0,verts.length/3);if(t>msgUntil)q('message').textContent='';updateNear();mini();requestAnimationFrame(draw)}
 requestAnimationFrame(draw);
 q('subtitle').textContent='Kde stíny šeptají · 3D BETA 0.2 — dotyk opraven';
 // Touch and mouse: left joystick, right half look
