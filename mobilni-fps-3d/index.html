@@ -28,7 +28,6 @@ window.zkProfile=null;
   if(!n){err.textContent='Nejdřív zadej jméno hráče.';name.focus();return false}
   err.textContent='';
   const p={name:n,character,difficulty};
-  const wasNew=!saved||saved.name!==n||saved.character!==character||saved.difficulty!==difficulty;
   try{localStorage.setItem('zk_fps_profile_v1',JSON.stringify(p))}catch{}
   apply(p);
   start.textContent='Pokračovat ve výpravě';
@@ -172,7 +171,7 @@ function fallback2D(){
  const map=q('map'),mc=map.getContext('2d');mc.clearRect(0,0,210,210);mc.fillStyle='#284d37';mc.fillRect(0,0,210,210);for(const a of regions){mc.fillStyle=a.type==='lake'?'#3b91a5':a.type==='forest'?'#1e6b3d':a.type==='field'?'#bd9a48':'#777d71';mc.beginPath();mc.arc(105+a.x*1.45,105+a.z*1.45,Math.max(5,a.r*.6),0,Math.PI*2);mc.fill()}for(const f of features){mc.fillStyle=f.type==='water'?'#75c6df':f.type==='fire'?'#ffc563':'#edd6a5';mc.beginPath();mc.arc(105+f.x*1.45,105+f.z*1.45,5,0,Math.PI*2);mc.fill()}mc.save();mc.translate(105+player.x*1.45,105+player.z*1.45);mc.rotate(player.yaw);mc.fillStyle='white';mc.beginPath();mc.moveTo(0,-12);mc.lineTo(-7,7);mc.lineTo(7,7);mc.closePath();mc.fill();mc.restore();
  requestAnimationFrame(draw)}
  requestAnimationFrame(draw);
- q('help').querySelector('p').textContent='Malovaná krajina 0.4: nový obzor, listnaté stromy, kamenné ohniště, pramen a staveniště podle motivů schválených dílků. Jde o lehký perspektivní režim na Androidu, nikoli plnohodnotné WebGL 3D.';
+
  message('Ovládání aktivní · pohyb vlevo nebo tlačítkem Vpřed');
 }
 
