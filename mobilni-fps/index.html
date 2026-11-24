@@ -1,7 +1,93 @@
 <!doctype html><html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no"><meta name="theme-color" content="#12271f"><title>Zapomenutý kraj · Pohled hrdiny</title><style>
 *{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#182a28;color:#fff;font-family:system-ui,-apple-system,Segoe UI,sans-serif;touch-action:none}canvas{display:block;width:100%;height:100%;touch-action:none}#game{position:absolute;inset:0}#top{position:absolute;left:0;right:0;top:0;padding:max(10px,env(safe-area-inset-top)) 14px 10px;display:flex;align-items:flex-start;justify-content:space-between;gap:8px;pointer-events:none;background:linear-gradient(#10231cd6,transparent)}#title{font-family:Georgia,serif;font-size:clamp(15px,2.7vw,23px);font-weight:bold;letter-spacing:.4px;text-shadow:0 2px 5px #000}#subtitle{font-size:10px;letter-spacing:1.4px;color:#e9c887;text-transform:uppercase}.stat{padding:6px 9px;border:1px solid #bca2776e;border-radius:9px;background:#14231ac9;font-size:12px;white-space:nowrap}#stats{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end;max-width:60%}#crosshair{position:absolute;left:50%;top:50%;width:16px;height:16px;transform:translate(-50%,-50%);pointer-events:none;opacity:.75}#crosshair:before,#crosshair:after{content:"";position:absolute;background:#f6e8c9;box-shadow:0 0 2px #000}#crosshair:before{width:16px;height:2px;top:7px}#crosshair:after{height:16px;width:2px;left:7px}#message{position:absolute;top:24%;left:50%;transform:translateX(-50%);width:min(88%,520px);text-align:center;font-size:14px;text-shadow:0 2px 8px #000;pointer-events:none;min-height:30px}#near{position:absolute;bottom:125px;left:50%;transform:translateX(-50%);min-width:220px;max-width:75%;text-align:center;color:#f4dfae;background:#11251ec9;border:1px solid #aa915a99;border-radius:10px;padding:8px 13px;font-size:13px;pointer-events:none}#bottom{position:absolute;bottom:max(14px,env(safe-area-inset-bottom));left:0;right:0;display:flex;align-items:flex-end;justify-content:space-between;padding:0 23px;gap:12px;pointer-events:none}.joystick{width:114px;height:114px;border-radius:50%;border:2px solid #e9d5aa85;background:#162b2377;position:relative;pointer-events:auto;touch-action:none}.joystick:before{content:"";position:absolute;inset:19px;border-radius:50%;border:1px dashed #ddc89a77}.stick{position:absolute;width:43px;height:43px;left:35px;top:35px;border-radius:50%;background:#d6bb83d9;box-shadow:0 2px 9px #0008}#forwardBtn{position:absolute;left:138px;bottom:24px;pointer-events:auto;background:#345e48e8;min-width:76px;min-height:48px;border:2px solid #e9d5aa8c;touch-action:none}#actions{display:flex;gap:9px;pointer-events:auto;align-items:flex-end}button{cursor:pointer;color:#f8ebcb;font:600 13px system-ui;background:#20382bdb;border:1px solid #d2b47e9b;border-radius:14px;padding:11px 14px;box-shadow:0 2px 10px #0006;touch-action:manipulation}button:active{background:#735d33}#interact{width:79px;height:79px;border-radius:50%;font-size:13px;background:#8a643be0;border:2px solid #f6d59d}#run{width:65px;height:65px;border-radius:50%;padding:4px}#menuBtn{position:absolute;right:16px;top:69px}#help{position:absolute;top:45%;left:50%;transform:translate(-50%,-50%);width:min(92vw,490px);max-height:80vh;overflow:auto;z-index:5;background:#172d24f7;border:1px solid #ddc18a;border-radius:17px;padding:22px;box-shadow:0 20px 80px #000c}#overlay[hidden],#help[hidden]{display:none}#help h2{font:25px Georgia,serif;margin:0 0 9px;color:#f0d397}#help p{line-height:1.45;color:#e7e4d7;font-size:14px}#help button{width:100%;padding:14px;margin-top:9px}#overlay{position:absolute;inset:0;background:#0008;z-index:4}#hero{font-size:12px;color:#d8c596;margin-top:3px}#ui.hide{display:none}#screenMsg{color:#ffedcc}#mini{position:absolute;right:15px;bottom:115px;width:105px;height:105px;background:#162d21bc;border-radius:50%;border:1px solid #c2a97b8c;pointer-events:none}#mini canvas{width:100%;height:100%}@media(max-width:640px){#title{font-size:15px}#subtitle{font-size:8px}.stat{font-size:10px;padding:4px 6px}#top{padding:8px 8px}#menuBtn{right:8px;top:62px;padding:7px 9px}#bottom{padding:0 11px}.joystick{width:96px;height:96px}.stick{left:27px;top:27px}#interact{width:68px;height:68px}#run{width:54px;height:54px}#near{bottom:100px;font-size:11px}#mini{width:74px;height:74px;bottom:105px}}@media(orientation:landscape) and (max-height:440px){#bottom{bottom:8px}.joystick{width:83px;height:83px}.stick{width:36px;height:36px;left:22px;top:22px}#interact{width:61px;height:61px}#run{width:48px;height:48px}#near{bottom:57px;left:50%;font-size:11px}#mini{width:75px;height:75px;bottom:75px}#title{font-size:16px}#stats{margin-right:53px}#menuBtn{top:10px}#message{top:18%}}
 </style></head><body><canvas id="game"></canvas><div id="ui"><div id="top"><div><div id="title">ZAPOMENUTÝ KRAJ</div><div id="subtitle">Kde stíny šeptají · 3D pohled hrdiny</div><div id="hero">Hrdina: Erik · průzkumná ukázka</div></div><div id="stats"><span class="stat" id="wood">Dřevo 2</span><span class="stat" id="stone">Kámen 2</span><span class="stat" id="food">Jídlo 2</span><span class="stat" id="water">Voda 1</span></div></div><button id="menuBtn">☰</button><div id="crosshair"></div><div id="message"></div><div id="near">Rozhlédni se a dojdi k ohništi.</div><div id="mini"><canvas id="map" width="210" height="210"></canvas></div><div id="bottom"><div class="joystick" id="joy"><div class="stick" id="stick"></div></div><button id="forwardBtn" aria-label="Jít dopředu">▲ Vpřed</button><div id="actions"><button id="run">Běh</button><button id="interact">Použít</button></div></div></div><div id="overlay"></div><div id="help"><h2>Zapomenutý kraj</h2><p><strong>První hratelný prototyp z očí hrdiny.</strong> Projdi startovní osadu, prohlédni si ohniště a pramen a postav první stan na stavebním místě.</p><p><b>Telefon:</b> vlevo virtuální joystick; prstem po pravé části obrazovky otáčej pohled. Tlačítko <b>Použít</b> slouží k interakci, <b>Běh</b> zrychlí pohyb.</p><p><b>Počítač:</b> W A S D pro pohyb, myš se stisknutým tlačítkem pro rozhlížení, E pro interakci, Shift pro běh.</p><p style="font-size:12px;color:#d5bd87">Pracovní 3D modely zachovávají motivy původní hry. Nejde zatím o finální převod schválených ilustrací.</p><button id="start">Vstoupit do kraje</button></div><script>
-(()=>{'use strict';const c=document.getElementById('game'),gl=c.getContext('webgl',{antialias:true,alpha:false});if(!gl){document.getElementById('help').innerHTML='<h2>3D není dostupné</h2><p>Prohlížeč nepodporuje WebGL. Zkus otevřít hru v Chrome.</p>';return;}
+(()=>{'use strict';const c=document.getElementById('game'),gl=null; if(!gl){fallback2D();return;}
+
+function fallback2D(){
+ const ctx=c.getContext('2d'); if(!ctx){document.getElementById('help').innerHTML='<h2>Nelze spustit grafiku</h2>';return;}
+ const q=id=>document.getElementById(id);
+ const player={x:1.5,z:-2.4,yaw:-.22,pitch:0};
+ const centers=[[0,-6.4],[-6.9,5.55],[6.9,5.55]];
+ const features=[
+  {x:0,z:-6.4,type:'fire',name:'Ohniště'},
+  {x:-6.9,z:5.55,type:'water',name:'Pramen'},
+  {x:6.9,z:5.55,type:'camp',name:'Stavební místo'}
+ ];
+ let saved={wood:2,stone:2,food:2,water:1,built:0};
+ try{saved={...saved,...JSON.parse(localStorage.getItem('zk_fps_01')||'{}')}}catch{}
+ const persist=()=>{try{localStorage.setItem('zk_fps_01',JSON.stringify(saved))}catch{}};
+ const paintStats=()=>{for(const k of ['wood','stone','food','water'])q(k).textContent=({wood:'Dřevo ',stone:'Kámen ',food:'Jídlo ',water:'Voda '})[k]+saved[k]};
+ paintStats();
+ q('subtitle').textContent='Kde stíny šeptají · režim pro mobil';
+ let moving={x:0,y:0},running=false,buttonForward=false,keys={},last=performance.now(),look=null,joyId=null,lookPX=0,lookPY=0,lastInfo='';
+ const j=q('joy'),stick=q('stick'),fb=q('forwardBtn');
+ let trees=[];let seed=139;function rand(){seed=(seed*1664525+1013904223)>>>0;return seed/4294967296}
+ for(let i=0;i<90;i++){let x=(rand()-.5)*74,z=(rand()-.5)*74;if(Math.min(...centers.map(a=>Math.hypot(x-a[0],z-a[1])))>6.8)trees.push({x,z,h:1+rand()*.65})}
+ let stones=[];for(let i=0;i<25;i++){let x=(rand()-.5)*70,z=(rand()-.5)*70;stones.push({x,z,h:.35+rand()*.35})}
+ const nearest=()=>{let n=features.map(f=>({...f,d:Math.hypot(f.x-player.x,f.z-player.z)})).sort((a,b)=>a.d-b.d)[0];return n.d<3.4?n:null};
+ function message(s){lastInfo=s;q('message').textContent=s;setTimeout(()=>{if(lastInfo===s)q('message').textContent=''},2600)}
+ function interact(){let f=nearest();if(!f){message('Dojdi blíž k ohništi, prameni nebo stavebnímu místu.');return}
+ if(f.type==='water'){saved.water=Math.min(10,saved.water+1);message('Nabral jsi vodu.')}
+ if(f.type==='fire'){message('Ohniště hřeje. Výprava pokračuje.')}
+ if(f.type==='camp'){if(saved.built){message('Stan už stojí.')}else if(saved.wood>=2&&saved.stone>=2){saved.wood-=2;saved.stone-=2;saved.built=1;message('Postavil jsi stan!')}else message('Na stan potřebuješ 2 dřeva a 2 kameny.')}
+ persist();paintStats()}
+ function setJoy(x,y){let r=j.getBoundingClientRect();let xx=(x-r.left-r.width/2)/(r.width*.34),yy=(y-r.top-r.height/2)/(r.height*.34);let m=Math.max(1,Math.hypot(xx,yy));moving.x=xx/m;moving.y=yy/m;let max=(r.width-43)/2;stick.style.transform='translate('+moving.x*max+'px,'+moving.y*max+'px)'}
+ function releaseJoy(){joyId=null;moving.x=0;moving.y=0;stick.style.transform='translate(0,0)'}
+ j.addEventListener('pointerdown',e=>{joyId=e.pointerId;try{j.setPointerCapture(e.pointerId)}catch{}setJoy(e.clientX,e.clientY);e.preventDefault()});
+ j.addEventListener('pointermove',e=>{if(e.pointerId===joyId)setJoy(e.clientX,e.clientY)});
+ for(const evt of ['pointerup','pointercancel','lostpointercapture'])j.addEventListener(evt,e=>{if(joyId===null||e.pointerId===joyId)releaseJoy()});
+ // Backup touch handling for browsers with unreliable PointerEvent capture
+ j.addEventListener('touchstart',e=>{let t=e.changedTouches[0];setJoy(t.clientX,t.clientY);e.preventDefault()},{passive:false});
+ j.addEventListener('touchmove',e=>{let t=e.touches[0];if(t)setJoy(t.clientX,t.clientY);e.preventDefault()},{passive:false});
+ for(const evt of ['touchend','touchcancel'])j.addEventListener(evt,releaseJoy,{passive:false});
+ c.addEventListener('pointerdown',e=>{look=e.pointerId;lookPX=e.clientX;lookPY=e.clientY;try{c.setPointerCapture(look)}catch{}});
+ c.addEventListener('pointermove',e=>{if(e.pointerId!==look)return;let w=Math.max(280,c.clientWidth);player.yaw+=(e.clientX-lookPX)*3/w;player.pitch=Math.max(-.65,Math.min(.65,player.pitch+(e.clientY-lookPY)*1.6/w));lookPX=e.clientX;lookPY=e.clientY});
+ for(const evt of ['pointerup','pointercancel'])c.addEventListener(evt,e=>{if(e.pointerId===look)look=null});
+ const onF=e=>{buttonForward=true;e?.preventDefault?.()},offF=()=>{buttonForward=false};
+ fb.addEventListener('pointerdown',e=>{onF(e);try{fb.setPointerCapture(e.pointerId)}catch{}});for(const evt of ['pointerup','pointercancel','pointerleave','lostpointercapture'])fb.addEventListener(evt,offF);
+ fb.addEventListener('touchstart',onF,{passive:false});for(const evt of ['touchend','touchcancel'])fb.addEventListener(evt,offF);
+ q('run').addEventListener('pointerdown',e=>{running=true;e.preventDefault()});for(const evt of ['pointerup','pointercancel','pointerleave'])q('run').addEventListener(evt,()=>running=false);
+ q('interact').addEventListener('click',interact);
+ function modal(show){q('overlay').hidden=!show;q('help').hidden=!show}
+ q('start').addEventListener('click',()=>modal(false));
+ q('menuBtn').addEventListener('click',()=>modal(true));
+ window.addEventListener('keydown',e=>{keys[e.key.toLowerCase()]=true});
+ window.addEventListener('keyup',e=>{keys[e.key.toLowerCase()]=false});
+ document.addEventListener('visibilitychange',()=>{releaseJoy();buttonForward=false;running=false;keys={}});
+ function projected(o,w,h){let dx=o.x-player.x,dz=o.z-player.z;let forward=-Math.sin(player.yaw)*dx-Math.cos(player.yaw)*dz;let right=Math.cos(player.yaw)*dx-Math.sin(player.yaw)*dz;if(forward<.3)return null;let focal=w*.75;return{x:w/2+right/forward*focal,y:h*(.57+player.pitch*.45)+(.02/forward)*h,scale:focal/forward,depth:forward}}
+ function triangle(x,y,w,h,col){ctx.fillStyle=col;ctx.beginPath();ctx.moveTo(x,y-h);ctx.lineTo(x-w/2,y);ctx.lineTo(x+w/2,y);ctx.closePath();ctx.fill()}
+ function draw(t){
+ const dt=Math.min(.06,(t-last)/1000||0);last=t;
+ let side=moving.x+(keys.a?-1:0)+(keys.d?1:0),front=-moving.y+(buttonForward?1:0)+(keys.w||keys.arrowup?1:0)-(keys.s||keys.arrowdown?1:0);
+ let magnitude=Math.hypot(side,front);if(magnitude>0){side/=Math.max(1,magnitude);front/=Math.max(1,magnitude);let sp=(running||keys.shift?7:4.1)*dt;let nx=player.x+(Math.cos(player.yaw)*side+Math.sin(player.yaw)*front)*sp,nz=player.z+(Math.sin(player.yaw)*side-Math.cos(player.yaw)*front)*sp;if(Math.min(...centers.map(a=>Math.hypot(nx-a[0],nz-a[1])))<7.4){player.x=nx;player.z=nz}}
+ if(keys.arrowleft)player.yaw-=dt*1.3;if(keys.arrowright)player.yaw+=dt*1.3;
+ let w=Math.max(1,c.clientWidth),h=Math.max(1,c.clientHeight),dpr=Math.min(devicePixelRatio||1,1.5);
+ if(c.width!==Math.round(w*dpr)||c.height!==Math.round(h*dpr)){c.width=Math.round(w*dpr);c.height=Math.round(h*dpr)}
+ ctx.setTransform(dpr,0,0,dpr,0,0);
+ let horizon=h*(.57+player.pitch*.45);
+ const sky=ctx.createLinearGradient(0,0,0,Math.max(10,horizon));sky.addColorStop(0,'#91b9c3');sky.addColorStop(1,'#d9d8a6');ctx.fillStyle=sky;ctx.fillRect(0,0,w,horizon);
+ const ground=ctx.createLinearGradient(0,horizon,0,h);ground.addColorStop(0,'#5d8553');ground.addColorStop(1,'#304d32');ctx.fillStyle=ground;ctx.fillRect(0,horizon,w,h-horizon);
+ ctx.fillStyle='#6a9255';for(let i=0;i<13;i++){let xx=i*w/12-w/12;triangle(xx,horizon+10,170,45+(i%4)*11,'#708b61')}
+ let objects=[];
+ for(const o of trees){const p=projected(o,w,h);if(p)objects.push({...p,type:'tree',h:o.h})}
+ for(const o of stones){const p=projected(o,w,h);if(p)objects.push({...p,type:'stone',h:o.h})}
+ for(const f of features){const p=projected(f,w,h);if(p)objects.push({...p,type:f.type,h:1})}
+ objects.sort((a,b)=>b.depth-a.depth);
+ for(const o of objects){let size=Math.min(h*2,o.scale*1.6*o.h),by=horizon+o.scale*.22;ctx.save();ctx.globalAlpha=Math.min(1,1/(1+o.depth*.008));
+ if(o.type==='tree'){ctx.fillStyle='#694a34';ctx.fillRect(o.x-size*.065,by-size*.46,size*.13,size*.48);triangle(o.x,by-size*.19,size*.85,size*.8,'#2d6043');triangle(o.x,by-size*.48,size*.64,size*.67,'#427d54')}
+ if(o.type==='stone'){ctx.fillStyle='#90988b';ctx.beginPath();ctx.ellipse(o.x,by,size*.4,size*.3,0,0,Math.PI*2);ctx.fill()}
+ if(o.type==='fire'){ctx.fillStyle='#9a6940';ctx.beginPath();ctx.ellipse(o.x,by,size*.65,size*.23,0,0,Math.PI*2);ctx.fill();triangle(o.x,by-size*.08,size*.52,size*.65,'#ffc756');triangle(o.x+size*.06,by-size*.03,size*.26,size*.46,'#e56e28')}
+ if(o.type==='water'){ctx.fillStyle='#71b5c5';ctx.beginPath();ctx.ellipse(o.x,by,size*.75,size*.24,0,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#e8e7ce';ctx.lineWidth=3;ctx.stroke()}
+ if(o.type==='camp'){ctx.fillStyle=saved.built?'#bb8b56':'#aa936a';ctx.beginPath();ctx.ellipse(o.x,by,size*.68,size*.21,0,0,Math.PI*2);ctx.fill();if(saved.built)triangle(o.x,by,size*1.3,size*.9,'#c0a26b')}
+ ctx.restore()}
+ let n=nearest();q('near').textContent=n?n.name+' · '+(n.type==='water'?'Nabrat vodu':n.type==='camp'?'Postavit/prohlédnout stan':'Odpočinout'):'Rozhlédni se a dojdi k některému startovnímu místu';
+ const map=q('map'),mc=map.getContext('2d');mc.clearRect(0,0,210,210);mc.fillStyle='#284d37';mc.fillRect(0,0,210,210);for(const f of features){mc.fillStyle=f.type==='water'?'#75c6df':f.type==='fire'?'#ffc563':'#edd6a5';mc.beginPath();mc.arc(105+f.x*5,105+f.z*5,8,0,Math.PI*2);mc.fill()}mc.save();mc.translate(105+player.x*5,105+player.z*5);mc.rotate(player.yaw);mc.fillStyle='white';mc.beginPath();mc.moveTo(0,-12);mc.lineTo(-7,7);mc.lineTo(7,7);mc.closePath();mc.fill();mc.restore();
+ requestAnimationFrame(draw)}
+ requestAnimationFrame(draw);
+ q('help').querySelector('p').textContent='Mobilní režim: pohyb vlevo joystickem nebo tlačítkem Vpřed. Po pravé straně otáčej pohled. V okolí pramene nebo stanu použij tlačítko Použít.';
+ message('Ovládání aktivní · pohyb vlevo nebo tlačítkem Vpřed');
+}
+
 const VS=`attribute vec3 p,n,col;uniform mat4 vp;varying vec3 vcol;varying float fog;void main(){vec4 q=vp*vec4(p,1.);gl_Position=q;float light=max(.55,abs(dot(normalize(n),normalize(vec3(.35,.9,.45))))*.4+.57);vcol=col*light;fog=clamp((length(q.xyz)/max(q.w,.01)-.25)*.045,0.,.52);}`;
 const FS=`precision mediump float;varying vec3 vcol;varying float fog;void main(){gl_FragColor=vec4(mix(vcol,vec3(.55,.65,.59),fog),1.);}`;
 function shader(t,s){let v=gl.createShader(t);gl.shaderSource(v,s);gl.compileShader(v);if(!gl.getShaderParameter(v,gl.COMPILE_STATUS))throw Error(gl.getShaderInfoLog(v));return v;}let prog=gl.createProgram();gl.attachShader(prog,shader(gl.VERTEX_SHADER,VS));gl.attachShader(prog,shader(gl.FRAGMENT_SHADER,FS));gl.linkProgram(prog);gl.useProgram(prog);gl.enable(gl.DEPTH_TEST);gl.disable(gl.CULL_FACE);const attr={p:gl.getAttribLocation(prog,'p'),n:gl.getAttribLocation(prog,'n'),col:gl.getAttribLocation(prog,'col')},un=gl.getUniformLocation(prog,'vp');let verts=[],norms=[],colors=[],buf={};const rgb=h=>[parseInt(h.substr(1,2),16)/255,parseInt(h.substr(3,2),16)/255,parseInt(h.substr(5,2),16)/255];
