@@ -13,17 +13,28 @@ function fallback2D(){
   {x:-6.9,z:5.55,type:'water',name:'Pramen'},
   {x:6.9,z:5.55,type:'camp',name:'Stavební místo'}
  ];
+ // Prostorové terény vycházejí z barevnosti schválené malované hry;
+ // samostatné kresby původních hexů zůstávají nedotčené.
+ const regions=[
+ {x:-21,z:-12,r:13,type:'forest',name:'Hluboký les'},
+ {x:22,z:-18,r:14,type:'mountain',name:'Kamenné hory'},
+ {x:25,z:17,r:10,type:'lake',name:'Rybník'},
+ {x:-21,z:19,r:13,type:'field',name:'Obilné pole'},
+ {x:4,z:-36,r:9,type:'gold',name:'Zlatonosné hory'}
+ ];
  let saved={wood:2,stone:2,food:2,water:1,built:0};
  try{saved={...saved,...JSON.parse(localStorage.getItem('zk_fps_01')||'{}')}}catch{}
  const persist=()=>{try{localStorage.setItem('zk_fps_01',JSON.stringify(saved))}catch{}};
  const paintStats=()=>{for(const k of ['wood','stone','food','water'])q(k).textContent=({wood:'Dřevo ',stone:'Kámen ',food:'Jídlo ',water:'Voda '})[k]+saved[k]};
  paintStats();
- q('subtitle').textContent='Kde stíny šeptají · režim pro mobil';
+ q('subtitle').textContent='Kde stíny šeptají · krajina 0.2';
  let moving={x:0,y:0},running=false,buttonForward=false,keys={},last=performance.now(),look=null,joyId=null,lookPX=0,lookPY=0,lastInfo='';
  const j=q('joy'),stick=q('stick'),fb=q('forwardBtn');
  let trees=[];let seed=139;function rand(){seed=(seed*1664525+1013904223)>>>0;return seed/4294967296}
- for(let i=0;i<90;i++){let x=(rand()-.5)*74,z=(rand()-.5)*74;if(Math.min(...centers.map(a=>Math.hypot(x-a[0],z-a[1])))>6.8)trees.push({x,z,h:1+rand()*.65})}
- let stones=[];for(let i=0;i<25;i++){let x=(rand()-.5)*70,z=(rand()-.5)*70;stones.push({x,z,h:.35+rand()*.35})}
+ for(let i=0;i<185;i++){let x=(rand()-.5)*105,z=(rand()-.5)*105;let nearStart=Math.min(...centers.map(a=>Math.hypot(x-a[0],z-a[1])));let lake=regions.find(a=>a.type==='lake');let inLake=Math.hypot(x-lake.x,z-lake.z)<lake.r+2;let inForest=Math.hypot(x+21,z+12)<14;if(nearStart>7&& !inLake && (inForest||rand()>.48))trees.push({x,z,h:.8+rand()*1.2})}
+ let stones=[];for(let i=0;i<75;i++){let area=regions[i%3===0?4:1],x=area.x+(rand()-.5)*area.r*2.1,z=area.z+(rand()-.5)*area.r*2.1;stones.push({x,z,h:.5+rand()*1.5,type:'rock'})}
+ let plants=[];for(let i=0;i<155;i++){let area=regions[3],x=area.x+(rand()-.5)*area.r*1.6,z=area.z+(rand()-.5)*area.r*1.5;plants.push({x,z,h:.4+rand()*.5,type:'wheat'})}
+ let hills=[];for(let i=0;i<23;i++){let area=regions[i%4===0?4:1],x=area.x+(rand()-.5)*area.r*1.5,z=area.z+(rand()-.5)*area.r*1.6;hills.push({x,z,h:2+rand()*4,type:i%4===0?'goldhill':'hill'})}
  const nearest=()=>{let n=features.map(f=>({...f,d:Math.hypot(f.x-player.x,f.z-player.z)})).sort((a,b)=>a.d-b.d)[0];return n.d<3.4?n:null};
  function message(s){lastInfo=s;q('message').textContent=s;setTimeout(()=>{if(lastInfo===s)q('message').textContent=''},2600)}
  function interact(){let f=nearest();if(!f){message('Dojdi blíž k ohništi, prameni nebo stavebnímu místu.');return}
@@ -59,7 +70,7 @@ function fallback2D(){
  function draw(t){
  const dt=Math.min(.06,(t-last)/1000||0);last=t;
  let side=moving.x+(keys.a?-1:0)+(keys.d?1:0),front=-moving.y+(buttonForward?1:0)+(keys.w||keys.arrowup?1:0)-(keys.s||keys.arrowdown?1:0);
- let magnitude=Math.hypot(side,front);if(magnitude>0){side/=Math.max(1,magnitude);front/=Math.max(1,magnitude);let sp=(running||keys.shift?7:4.1)*dt;let nx=player.x+(Math.cos(player.yaw)*side+Math.sin(player.yaw)*front)*sp,nz=player.z+(Math.sin(player.yaw)*side-Math.cos(player.yaw)*front)*sp;if(Math.min(...centers.map(a=>Math.hypot(nx-a[0],nz-a[1])))<7.4){player.x=nx;player.z=nz}}
+ let magnitude=Math.hypot(side,front);if(magnitude>0){side/=Math.max(1,magnitude);front/=Math.max(1,magnitude);let sp=(running||keys.shift?7:4.1)*dt;let nx=player.x+(Math.cos(player.yaw)*side+Math.sin(player.yaw)*front)*sp,nz=player.z+(Math.sin(player.yaw)*side-Math.cos(player.yaw)*front)*sp;if(Math.hypot(nx,nz)<58){player.x=nx;player.z=nz}}
  if(keys.arrowleft)player.yaw-=dt*1.3;if(keys.arrowright)player.yaw+=dt*1.3;
  let w=Math.max(1,c.clientWidth),h=Math.max(1,c.clientHeight),dpr=Math.min(devicePixelRatio||1,1.5);
  if(c.width!==Math.round(w*dpr)||c.height!==Math.round(h*dpr)){c.width=Math.round(w*dpr);c.height=Math.round(h*dpr)}
@@ -71,20 +82,29 @@ function fallback2D(){
  let objects=[];
  for(const o of trees){const p=projected(o,w,h);if(p)objects.push({...p,type:'tree',h:o.h})}
  for(const o of stones){const p=projected(o,w,h);if(p)objects.push({...p,type:'stone',h:o.h})}
+ for(const o of hills){const p=projected(o,w,h);if(p)objects.push({...p,type:o.type,h:o.h})}
+ for(const o of plants){const p=projected(o,w,h);if(p)objects.push({...p,type:'wheat',h:o.h})}
+ const pond=regions.find(a=>a.type==='lake');let lp=projected(pond,w,h);if(lp)objects.push({...lp,type:'pond',h:pond.r/3});
+ const field=regions.find(a=>a.type==='field');let fp=projected(field,w,h);if(fp)objects.push({...fp,type:'farmground',h:field.r/3});
  for(const f of features){const p=projected(f,w,h);if(p)objects.push({...p,type:f.type,h:1})}
  objects.sort((a,b)=>b.depth-a.depth);
  for(const o of objects){let size=Math.min(h*2,o.scale*1.6*o.h),by=horizon+o.scale*.22;ctx.save();ctx.globalAlpha=Math.min(1,1/(1+o.depth*.008));
  if(o.type==='tree'){ctx.fillStyle='#694a34';ctx.fillRect(o.x-size*.065,by-size*.46,size*.13,size*.48);triangle(o.x,by-size*.19,size*.85,size*.8,'#2d6043');triangle(o.x,by-size*.48,size*.64,size*.67,'#427d54')}
- if(o.type==='stone'){ctx.fillStyle='#90988b';ctx.beginPath();ctx.ellipse(o.x,by,size*.4,size*.3,0,0,Math.PI*2);ctx.fill()}
+ if(o.type==='stone'){ctx.fillStyle='#66746e';ctx.beginPath();ctx.moveTo(o.x-size*.55,by);ctx.lineTo(o.x-size*.31,by-size*.49);ctx.lineTo(o.x+size*.12,by-size*.55);ctx.lineTo(o.x+size*.54,by-size*.16);ctx.lineTo(o.x+size*.47,by);ctx.closePath();ctx.fill();triangle(o.x+size*.06,by-size*.16,size*.4,size*.39,'#b6b9a8')}
+ if(o.type==='hill'||o.type==='goldhill'){let c=o.type==='goldhill'?'#746750':'#727b79';triangle(o.x,by,size*1.45,size*1.4,c);triangle(o.x+size*.16,by-size*.17,size*.65,size*.85,o.type==='goldhill'?'#dbb45d':'#b7bcb5');if(o.type==='goldhill'){ctx.fillStyle='#e7bf55';ctx.fillRect(o.x-size*.11,by-size*.69,Math.max(1,size*.06),size*.24)}}
+ if(o.type==='wheat'){ctx.strokeStyle='#d2ae4e';ctx.lineWidth=Math.max(1,size*.08);ctx.beginPath();ctx.moveTo(o.x,by);ctx.lineTo(o.x-size*.11,by-size*.7);ctx.stroke();ctx.fillStyle='#ead479';ctx.fillRect(o.x-size*.15,by-size*.67,size*.16,size*.21)}
+ if(o.type==='pond'){ctx.fillStyle='#386e68';ctx.beginPath();ctx.ellipse(o.x,by+size*.1,size*1.4,size*.37,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#6ab8bb';ctx.beginPath();ctx.ellipse(o.x,by,size*1.2,size*.29,0,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#abd3cb';ctx.lineWidth=Math.max(1,size*.04);ctx.beginPath();ctx.ellipse(o.x-size*.1,by,size*.65,size*.12,0,0,Math.PI*2);ctx.stroke()}
+ if(o.type==='farmground'){ctx.fillStyle='#b69553';ctx.beginPath();ctx.ellipse(o.x,by,size*1.5,size*.38,0,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#e2c874';ctx.lineWidth=Math.max(1,size*.12);for(let k=-2;k<=2;k++){ctx.beginPath();ctx.moveTo(o.x+k*size*.34-size*.2,by-size*.12);ctx.lineTo(o.x+k*size*.34+size*.2,by+size*.12);ctx.stroke()}}
  if(o.type==='fire'){ctx.fillStyle='#9a6940';ctx.beginPath();ctx.ellipse(o.x,by,size*.65,size*.23,0,0,Math.PI*2);ctx.fill();triangle(o.x,by-size*.08,size*.52,size*.65,'#ffc756');triangle(o.x+size*.06,by-size*.03,size*.26,size*.46,'#e56e28')}
  if(o.type==='water'){ctx.fillStyle='#71b5c5';ctx.beginPath();ctx.ellipse(o.x,by,size*.75,size*.24,0,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#e8e7ce';ctx.lineWidth=3;ctx.stroke()}
  if(o.type==='camp'){ctx.fillStyle=saved.built?'#bb8b56':'#aa936a';ctx.beginPath();ctx.ellipse(o.x,by,size*.68,size*.21,0,0,Math.PI*2);ctx.fill();if(saved.built)triangle(o.x,by,size*1.3,size*.9,'#c0a26b')}
  ctx.restore()}
- let n=nearest();q('near').textContent=n?n.name+' · '+(n.type==='water'?'Nabrat vodu':n.type==='camp'?'Postavit/prohlédnout stan':'Odpočinout'):'Rozhlédni se a dojdi k některému startovnímu místu';
- const map=q('map'),mc=map.getContext('2d');mc.clearRect(0,0,210,210);mc.fillStyle='#284d37';mc.fillRect(0,0,210,210);for(const f of features){mc.fillStyle=f.type==='water'?'#75c6df':f.type==='fire'?'#ffc563':'#edd6a5';mc.beginPath();mc.arc(105+f.x*5,105+f.z*5,8,0,Math.PI*2);mc.fill()}mc.save();mc.translate(105+player.x*5,105+player.z*5);mc.rotate(player.yaw);mc.fillStyle='white';mc.beginPath();mc.moveTo(0,-12);mc.lineTo(-7,7);mc.lineTo(7,7);mc.closePath();mc.fill();mc.restore();
+ let n=nearest();let area=regions.map(a=>({...a,d:Math.hypot(a.x-player.x,a.z-player.z)})).sort((a,b)=>a.d-b.d)[0];
+ q('near').textContent=n?n.name+' · '+(n.type==='water'?'Nabrat vodu':n.type==='camp'?'Postavit/prohlédnout stan':'Odpočinout'):(area&&area.d<area.r?area.name+' · průzkum krajiny':'Volný průzkum · hledej lesy, hory, pole a rybník');
+ const map=q('map'),mc=map.getContext('2d');mc.clearRect(0,0,210,210);mc.fillStyle='#284d37';mc.fillRect(0,0,210,210);for(const a of regions){mc.fillStyle=a.type==='lake'?'#3b91a5':a.type==='forest'?'#1e6b3d':a.type==='field'?'#bd9a48':'#777d71';mc.beginPath();mc.arc(105+a.x*1.45,105+a.z*1.45,Math.max(5,a.r*.6),0,Math.PI*2);mc.fill()}for(const f of features){mc.fillStyle=f.type==='water'?'#75c6df':f.type==='fire'?'#ffc563':'#edd6a5';mc.beginPath();mc.arc(105+f.x*1.45,105+f.z*1.45,5,0,Math.PI*2);mc.fill()}mc.save();mc.translate(105+player.x*1.45,105+player.z*1.45);mc.rotate(player.yaw);mc.fillStyle='white';mc.beginPath();mc.moveTo(0,-12);mc.lineTo(-7,7);mc.lineTo(7,7);mc.closePath();mc.fill();mc.restore();
  requestAnimationFrame(draw)}
  requestAnimationFrame(draw);
- q('help').querySelector('p').textContent='Mobilní režim: pohyb vlevo joystickem nebo tlačítkem Vpřed. Po pravé straně otáčej pohled. V okolí pramene nebo stanu použij tlačítko Použít.';
+ q('help').querySelector('p').textContent='Rozšířená pohádková krajina: vyjdi ze startovní osady do lesa, hor, k rybníku a obilnému poli. Joystick vlevo a tlačítko Vpřed zůstávají stejné. Vpravo otáčíš pohled.';
  message('Ovládání aktivní · pohyb vlevo nebo tlačítkem Vpřed');
 }
 
